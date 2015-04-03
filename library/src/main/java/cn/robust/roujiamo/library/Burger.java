@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.FloatMath;
 import android.view.View;
@@ -22,11 +24,12 @@ public class Burger extends View implements View.OnClickListener {
     private static final int STROKE = 3;
     private static final int LENGTH = 48;
     private static final int ROTATE_DEGREE = 45;
-    private static final int ARC_ROTATE_DEGREE = 135;
+    private static final int ARC_ROTATE_DEGREE = -135;
     private static final int DURATION = 1000;
     private static final int MIDDLE_LINE_DURATION = 700;
+    //this is not an accurate number
     private static final int ARC_START_TIME_OFFSET = 585;
-    private static final int ARC_DURATION = 415;
+    private static final int ARC_DURATION = DURATION - ARC_START_TIME_OFFSET;
     private static final int ARC_ROTATE_DURATION = DURATION - MIDDLE_LINE_DURATION;
     private int padding;
     private int length;
@@ -72,7 +75,9 @@ public class Burger extends View implements View.OnClickListener {
     }
 
     private void init(Context context){
-        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
         setClickable(true);
         setOnClickListener(this);
         paint = new Paint();
@@ -82,6 +87,37 @@ public class Burger extends View implements View.OnClickListener {
         paint.setColor(Color.WHITE);
         padding = Util.dip2px(context, PADDING);
         length = Util.dip2px(context, LENGTH);
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+
+        SavedState ss = new SavedState(superState);
+
+        ss.open = this.open;
+
+        return ss;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if(!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+
+        final SavedState ss = (SavedState)state;
+        super.onRestoreInstanceState(ss.getSuperState());
+
+        this.open = ss.open;
+        post(new Runnable(){
+
+            @Override
+            public void run() {
+                setOpen(open, false, true);
+            }
+        });
     }
 
     @Override
@@ -159,7 +195,7 @@ public class Burger extends View implements View.OnClickListener {
         middleTranslateStart.x = Math.min(middleStart.x + middleLinePercent * middleLineTranslateX, arc.right);
         middleTranslateEnd.x = Math.min(middleEnd.x + middleLinePercent * middleLineTranslateX, arc.right);
 
-        arcStartAngle = -ARC_ROTATE_DEGREE * arcRotatePercent;
+        arcStartAngle = ARC_ROTATE_DEGREE * arcRotatePercent;
         arcSweepAngle = -360 * arcPercent;
 
         bottomStartRotated.x = (bottomStart.x - bottomEnd.x) * cos
@@ -245,9 +281,20 @@ public class Burger extends View implements View.OnClickListener {
         }
     }
 
-    public void setOpen(boolean open, boolean anim){
-        if(this.open == open){
+
+    /**
+     * to set the status. Must called after onLayout. You can use the post method
+     * @see android.view.View#post(Runnable)
+     * @param open status to be set
+     * @param anim need animation or not
+     * @param force force to update even the status is the same
+     */
+    public void setOpen(boolean open, boolean anim, boolean force){
+        if(!force && this.open == open){
             return;
+        }
+        if(mListener != null && this.open != open){
+            mListener.onOpen(open);
         }
         this.open = open;
         if(anim){
@@ -258,17 +305,69 @@ public class Burger extends View implements View.OnClickListener {
         } else{
             updateValue(0, 0, 0, 0);
         }
-        if(mListener != null){
-            mListener.onOpen(open);
-        }
         invalidate();
+    }
+
+    /**
+     * to set the status. Must called after onLayout. You can use the post method
+     * @see android.view.View#post(Runnable)
+     * @param open status to be set
+     * @param anim need animation or not
+     */
+    public void setOpen(boolean open, boolean anim){
+        setOpen(open, anim, false);
+    }
+
+    /**
+     * to set the icon's color
+     * @param color the color you want
+     */
+    public void setColor(int color){
+        paint.setColor(color);
     }
 
     public void setOnOpenListener(OnOpenListener listener){
         mListener = listener;
     }
 
+    /**
+     * Listening to the status of Burger
+     */
     public static interface OnOpenListener {
+        /**
+         * being called when burger's status changed
+         * @param open open:三 --> X, close:X --> 三
+         */
         public void onOpen(boolean open);
+    }
+
+    private static class SavedState extends BaseSavedState {
+        boolean open;
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            this.open = in.readInt() == 1;
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeInt(this.open ? 1 : 0);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR =
+                new Parcelable.Creator<SavedState>() {
+                    public SavedState createFromParcel(Parcel in) {
+                        return new SavedState(in);
+                    }
+
+                    public SavedState[] newArray(int size) {
+                        return new SavedState[size];
+                    }
+                };
     }
 }

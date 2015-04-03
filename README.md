@@ -27,9 +27,9 @@ Burger is an implementation of a design from Dribbble [Open & Close][1] by Creat
   For more details, just check out the sample project.
   
 ## TODO
-  [On & Off][2]
-  [Shut up][3]
-  [Play & Pause][4]
+* ``[On & Off][2]``
+* ``[Shut up][3]``
+* ``[Play & Pause][4]``
 
 
   [1]: https://dribbble.com/shots/1623679-Open-Close?list=shots&sort=popular&timeframe=year&offset=0
