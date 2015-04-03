@@ -4,7 +4,7 @@ At the moment it provides:
 * ``Burger``
 Burger is an implementation of a design from Dribbble [Open & Close][1] by Creativedash.
 
-<img src="https://github.com/sgwhp/Roujiamo/blob/master/screenshot/burger.png" width="320" height="568" />
+<img src="https://github.com/sgwhp/Roujiamo/blob/master/screenshot/burger.gif" width="320" height="568" />
 
 ## Usage
   example:
