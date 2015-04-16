@@ -2,18 +2,15 @@ package cn.robust.roujiamo.library;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
 
-import cn.robust.roujiamo.library.drawable.BurgerDrawable;
+import cn.robust.roujiamo.library.drawable.AbsRoujiamo;
+import cn.robust.roujiamo.library.drawable.MaterialBurgerDrawable;
 
 /**
  * most of these sources are copied from support-v4
@@ -151,7 +148,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
     private boolean mDrawerIndicatorEnabled = true;
 
     private Drawable mThemeImage;
-    private BurgerDrawable mSlider;
+    private AbsRoujiamo mSlider;
     private final int mOpenDrawerContentDescRes;
     private final int mCloseDrawerContentDescRes;
 
@@ -175,7 +172,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
      * @param closeDrawerContentDescRes A String resource to describe the "close drawer" action
      *                                  for accessibility
      */
-    public ActionBarDrawerToggle(Activity activity, DrawerLayout drawerLayout,
+    public ActionBarDrawerToggle(Activity activity, DrawerLayout drawerLayout, AbsRoujiamo iconDrawable,
                                  int openDrawerContentDescRes, int closeDrawerContentDescRes) {
         mActivity = activity;
 
@@ -191,7 +188,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
         mCloseDrawerContentDescRes = closeDrawerContentDescRes;
 
         mThemeImage = getThemeUpIndicator();
-        mSlider = new BurgerDrawable(activity);
+        mSlider = iconDrawable;
     }
 
     /**
@@ -204,16 +201,22 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
      * (For example, if you stop forwarding appropriate drawer events for a period of time.)</p>
      */
     public void syncState() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mSlider.setPercentage(1, true);
-        } else {
-            mSlider.setPercentage(0, true);
-        }
+        mSlider.open(mDrawerLayout.isDrawerOpen(GravityCompat.START), false, true);
+//        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+//            mSlider.setPercentage(1, true);
+//        } else {
+//            mSlider.setPercentage(0, true);
+//        }
 
         if (mDrawerIndicatorEnabled) {
             setActionBarUpIndicator(mSlider, mDrawerLayout.isDrawerOpen(GravityCompat.START) ?
                     mCloseDrawerContentDescRes : mOpenDrawerContentDescRes);
         }
+    }
+
+    public void setDrawable(AbsRoujiamo drawable){
+        mSlider = drawable;
+        syncState();
     }
 
     /**
@@ -302,7 +305,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
      */
     @Override
     public void onDrawerOpened(View drawerView) {
-        mSlider.setPercentage(1, true);
+        mSlider.open(true, false, false);
         if (mDrawerIndicatorEnabled) {
             setActionBarDescription(mCloseDrawerContentDescRes);
         }
@@ -317,7 +320,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
      */
     @Override
     public void onDrawerClosed(View drawerView) {
-        mSlider.setPercentage(0, true);
+        mSlider.open(false, false, false);
         if (mDrawerIndicatorEnabled) {
             setActionBarDescription(mOpenDrawerContentDescRes);
         }

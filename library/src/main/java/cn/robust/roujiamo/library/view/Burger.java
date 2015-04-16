@@ -12,8 +12,7 @@ import cn.robust.roujiamo.library.OnOpenListener;
 import cn.robust.roujiamo.library.drawable.BurgerDrawable;
 
 /**
- * Implementation of Open & Close from dribbble.
- * See the <a href="https://dribbble.com/shots/1623679-Open-Close?list=shots&sort=popular&timeframe=year&offset=0" />
+ * @see cn.robust.roujiamo.library.drawable.BurgerDrawable
  * Created by sgwhp on 15-3-30.
  */
 public class Burger extends ImageView implements View.OnClickListener {
@@ -76,26 +75,26 @@ public class Burger extends ImageView implements View.OnClickListener {
         });
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int measuredWidth;
-        int measuredHeight;
-        int wMode = MeasureSpec.getMode(widthMeasureSpec);
-        int hMode = MeasureSpec.getMode(heightMeasureSpec);
-        Drawable d = getDrawable();
-        if(wMode != MeasureSpec.EXACTLY){
-            measuredWidth = d.getIntrinsicWidth();
-        } else {
-            measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
-        }
-        if(hMode != MeasureSpec.EXACTLY){
-            measuredHeight = d.getIntrinsicHeight();
-        } else {
-            measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
-        }
-
-        setMeasuredDimension(measuredWidth, measuredHeight);
-    }
+//    @Override
+//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//        int measuredWidth;
+//        int measuredHeight;
+//        int wMode = MeasureSpec.getMode(widthMeasureSpec);
+//        int hMode = MeasureSpec.getMode(heightMeasureSpec);
+//        Drawable d = getDrawable();
+//        if(wMode != MeasureSpec.EXACTLY){
+//            measuredWidth = d.getIntrinsicWidth();
+//        } else {
+//            measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
+//        }
+//        if(hMode != MeasureSpec.EXACTLY){
+//            measuredHeight = d.getIntrinsicHeight();
+//        } else {
+//            measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
+//        }
+//
+//        setMeasuredDimension(measuredWidth, measuredHeight);
+//    }
 
     /**
      * nothing will be done
@@ -124,7 +123,7 @@ public class Burger extends ImageView implements View.OnClickListener {
         if(mListener != null && drawable.isOpen() != open){
             mListener.onOpen(this, open);
         }
-        drawable.setOpen(open, anim, force);
+        drawable.open(open, anim, force);
     }
 
     /**

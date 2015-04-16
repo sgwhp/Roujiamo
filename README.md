@@ -7,6 +7,8 @@ At the moment it provides:
 Burger is an implementation of a design from Dribbble [Open & Close][1] by Creativedash.
 * ``Dipper``
 Dipper is an implementation of a design from Dribbble [On & Off][2] by Creativedash.
+* ``Material Burger``
+Material Burger is an implementation of a design from [Google Material Design][5].
 
 ## Usage
   example:
@@ -36,3 +38,4 @@ Dipper is an implementation of a design from Dribbble [On & Off][2] by Creatived
   [2]: https://dribbble.com/shots/1631598-On-Off?list=shots&sort=popular&timeframe=year&offset=34
   [3]: https://dribbble.com/shots/1660442-Shut-Up?list=shots&sort=popular&timeframe=year&offset=52
   [4]: https://dribbble.com/shots/1681359-Play-Pause?list=users&offset=52
+  [5]: https://dribbble.com/shots/1621920-Google-Material-Design-Free-AE-Project-File?list=shots&sort=popular&timeframe=year&offset=19

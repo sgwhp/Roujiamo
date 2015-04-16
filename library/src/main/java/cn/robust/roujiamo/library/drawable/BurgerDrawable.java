@@ -2,14 +2,12 @@ package cn.robust.roujiamo.library.drawable;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
-import android.os.SystemClock;
 import android.util.FloatMath;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AnticipateInterpolator;
@@ -17,31 +15,28 @@ import android.view.animation.AnticipateOvershootInterpolator;
 
 import cn.robust.roujiamo.library.Point;
 import cn.robust.roujiamo.library.Util;
-import cn.robust.roujiamo.library.view.Burger;
 
 /**
- * @see cn.robust.roujiamo.library.view.Burger
+ * Implementation of Open & Close from dribbble.
+ * See the <a href="https://dribbble.com/shots/1623679-Open-Close?list=shots&sort=popular&timeframe=year&offset=0" />
  * Created by wuhongping on 15-4-9.
  */
-public class BurgerDrawable extends Drawable {
-    private static final int PADDING = 2;
+public class BurgerDrawable extends AbsRoujiamo {
+    private static final int PADDING = 4;
     private static final int STROKE = 3;
-    private static final int LENGTH = 46;
+    private static final int LENGTH = 44;
     private static final int ROTATE_DEGREE = 45;
     private static final int ARC_ROTATE_DEGREE = -135;
-    public static final int DURATION = 1000;
-    private static final int MIDDLE_LINE_DURATION = 700;
+    public static final int DURATION = 800;//1000;
+    private static final int MIDDLE_LINE_DURATION = 560;//700;
     // the arc animation is suppose to be right after the middle line reaching the right of arc.
     // this is not an accurate number
-    private static final int ARC_START_TIME_OFFSET = 585;
+    private static final int ARC_START_TIME_OFFSET = 468;//585;
     private static final int ARC_DURATION = DURATION - ARC_START_TIME_OFFSET;
     private static final int ARC_ROTATE_DURATION = DURATION - MIDDLE_LINE_DURATION;
-    private boolean open = false;
-    private boolean animating = false;
     private int padding;
     private int length;
     private float lineLength;
-    private Paint paint = new Paint();
     private float radius, x, y;
     private RectF arc = new RectF();
     private float arcStartAngle;
@@ -61,34 +56,40 @@ public class BurgerDrawable extends Drawable {
     private AnticipateOvershootInterpolator anticipateOvershootInterpolator = new AnticipateOvershootInterpolator(3.0f);
     private AccelerateDecelerateInterpolator accelerateDecelerateInterpolator = new AccelerateDecelerateInterpolator();
     private AnticipateInterpolator anticipateInterpolator = new AnticipateInterpolator();
-    private float percent;
-
-    private Runnable mInvalidateTask = new Runnable() {
-        @Override
-        public void run() {
-            invalidateSelf();
-        }
-    };
+    private Path path = new Path();
 
     public BurgerDrawable(Context context){
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(Util.dip2px(context, STROKE));
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setAntiAlias(true);
-        paint.setColor(Color.WHITE);
+        super(context);
         padding = Util.dip2px(context, PADDING);
         length = Util.dip2px(context, LENGTH);
     }
 
     @Override
     public void draw(Canvas canvas) {
+        // setStrokeCap(Paint.Cap.ROUND) is useless for drawLine if hardwareAccelerated is true
+        // However, drawPath works just fine.
+        // So, we just use drawPath instead of turning off activity or application's hardware acceleration
+        // , in case this is added to ActionBar.
+
         // translate and rotate
-        canvas.drawLine(topStartRotated.x - translateX, topStartRotated.y, topEnd.x - translateX, topEnd.y, paint);
+        path.reset();
+        path.moveTo(topStartRotated.x - translateX, topStartRotated.y);
+        path.lineTo(topEnd.x - translateX, topEnd.y);
+        canvas.drawPath(path, paint);
+//        canvas.drawLine(topStartRotated.x - translateX, topStartRotated.y, topEnd.x - translateX, topEnd.y, paint);
         // just translate
-        canvas.drawLine(middleTranslateStart.x, middleTranslateStart.y, middleTranslateEnd.x, middleTranslateEnd.y, paint);
+        path.reset();
+        path.moveTo(middleTranslateStart.x, middleTranslateStart.y);
+        path.lineTo(middleTranslateEnd.x, middleTranslateEnd.y);
+        canvas.drawPath(path, paint);
+//        canvas.drawLine(middleTranslateStart.x, middleTranslateStart.y, middleTranslateEnd.x, middleTranslateEnd.y, paint);
         canvas.drawArc(arc, arcStartAngle, arcSweepAngle, false, paint);
         // translate and rotate
-        canvas.drawLine(bottomStartRotated.x - translateX, bottomStartRotated.y, bottomEnd.x - translateX, bottomEnd.y, paint);
+        path.reset();
+        path.moveTo(bottomStartRotated.x - translateX, bottomStartRotated.y);
+        path.lineTo(bottomEnd.x - translateX, bottomEnd.y);
+        canvas.drawPath(path, paint);
+//        canvas.drawLine(bottomStartRotated.x - translateX, bottomStartRotated.y, bottomEnd.x - translateX, bottomEnd.y, paint);
     }
 
     @Override
@@ -123,8 +124,8 @@ public class BurgerDrawable extends Drawable {
         int measuredHeight = bounds.height();
         x = measuredWidth / 2.0f;
         y = measuredHeight / 2.0f;
-        radius = Math.min(x, y) - padding * 2;
-        lineLength = radius * 0.85f;
+        radius = Math.min(x, y) - padding;
+        lineLength = radius;
         arc.set(x - radius, y - radius, x + radius, y + radius);
         middleLineTranslateX = radius + lineLength;
         float paddingHeight = lineLength * FloatMath.sin((float) Math.PI * ROTATE_DEGREE / 180) / 2;
@@ -170,6 +171,7 @@ public class BurgerDrawable extends Drawable {
      * @param percent the percentage the animation should animate
      * @param invalidate need to invalidate self? if true, must be called from ui thread
      */
+    @Override
     public void setPercentage(float percent, boolean invalidate){
         float radians;
         float linePercent;
@@ -190,84 +192,13 @@ public class BurgerDrawable extends Drawable {
         }
     }
 
-    public float getPercentage(){
-        return percent;
+    @Override
+    protected int getStroke() {
+        return STROKE;
     }
 
-    /**
-     * to set the icon's color
-     * @param color the color you want
-     */
-    public void setColor(int color){
-        paint.setColor(color);
-        invalidateSelf();
-    }
-
-    private void toggleAnim(){
-        float percent = open ? 0 : 1;
-        int timeLapse;
-        long cur;
-        float tmp;
-        long animStartTime = SystemClock.uptimeMillis();
-        while(percent <= 1 && percent >= 0) {
-            cur = SystemClock.uptimeMillis();
-            if (open) {
-                timeLapse = (int) (cur - animStartTime);
-            } else {
-                timeLapse = (int) (BurgerDrawable.DURATION + animStartTime - cur);
-            }
-            percent = (float) timeLapse / BurgerDrawable.DURATION;
-            tmp = Math.min(1, percent);
-            tmp = Math.max(0, tmp);
-            setPercentage(tmp, false);
-            scheduleSelf(mInvalidateTask, cur);
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        animating = false;
-    }
-
-    public void open(boolean open){
-        this.open = open;
-        animating = true;
-        new Thread(){
-            public void run(){
-                toggleAnim();
-            }
-        }.start();
-    }
-
-    /**
-     * to set the status. Must called after onLayout. You can use the post method
-     * @see android.view.View#post(Runnable)
-     * @param open status to be set
-     * @param anim need animation or not
-     * @param force force to update even the status is the same
-     */
-    public void setOpen(boolean open, boolean anim, boolean force){
-        if(!force && this.open == open){
-            return;
-        }
-        this.open = open;
-        if(anim){
-            open(open);
-            return;
-        } else if(open){
-            setPercentage(1, false);
-        } else{
-            setPercentage(0, false);
-        }
-        invalidateSelf();
-    }
-
-    public boolean isOpen(){
-        return open;
-    }
-
-    public boolean isAnimating(){
-        return animating;
+    @Override
+    protected int getDuration() {
+        return DURATION;
     }
 }

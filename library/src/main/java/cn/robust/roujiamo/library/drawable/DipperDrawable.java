@@ -18,22 +18,20 @@ import cn.robust.roujiamo.library.Point;
 import cn.robust.roujiamo.library.Util;
 
 /**
- * @see cn.robust.roujiamo.library.view.Dipper
+ * Implementation of On & Off from dribbble.
+ * See the <a href="https://dribbble.com/shots/1631598-On-Off?list=shots&sort=popular&timeframe=year&offset=34" />
  * Created by wuhongping on 15-4-10.
  */
-public class DipperDrawable extends Drawable {
-    private static final int PADDING = 2;
+public class DipperDrawable extends AbsRoujiamo {
+    private static final int PADDING = 4;
     private static final int STROKE = 3;
-    private static final int LENGTH = 46;
+    private static final int LENGTH = 44;
     public static final int DURATION = 700;
     private static final int ALPHA = 80;
     private int arcDuration = 0;
     private static final float SQRT_2 = FloatMath.sqrt(2);
-    private boolean open = false;
-    private boolean animating = false;
     private int padding;
     private int length;
-    private Paint paint;
     private Paint virtualPaint;
     private float radius, x0, y0;
     private RectF arc = new RectF();
@@ -51,20 +49,9 @@ public class DipperDrawable extends Drawable {
     private Interpolator interpolator = new OvershootInterpolator(1.6f);
     private float percent;
 
-    private Runnable mInvalidateTask = new Runnable() {
-        @Override
-        public void run() {
-            invalidateSelf();
-        }
-    };
 
     public DipperDrawable(Context context){
-        paint = new Paint();
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(Util.dip2px(context, STROKE));
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setAntiAlias(true);
-        paint.setColor(Color.WHITE);
+        super(context);
         virtualPaint = new Paint();
         virtualPaint.setStyle(Paint.Style.STROKE);
         virtualPaint.setStrokeWidth(Util.dip2px(context, STROKE));
@@ -114,7 +101,7 @@ public class DipperDrawable extends Drawable {
         int measuredHeight = bounds.height();
         x0 = measuredWidth / 2.0f;
         y0 = measuredHeight / 2.0f;
-        radius = Math.min(x0, y0) - padding * 2;
+        radius = Math.min(x0, y0) - padding;
         float longLineLength = radius * 0.9f;
         float shortLineLength = longLineLength / 2;
         float tmp = shortLineLength / SQRT_2;
@@ -183,6 +170,7 @@ public class DipperDrawable extends Drawable {
      * @param percent the percentage the animation should animate
      * @param invalidate need to invalidate self? if true, must be called from ui thread
      */
+    @Override
     public void setPercentage(float percent, boolean invalidate){
         float arcPercent;
 //        float tailPercent;
@@ -199,85 +187,25 @@ public class DipperDrawable extends Drawable {
         }
     }
 
-    public float getPercentage(){
-        return percent;
+    @Override
+    protected int getStroke() {
+        return STROKE;
+    }
+
+    @Override
+    protected int getDuration() {
+        return DURATION;
     }
 
     /**
      * to set the icon's color
      * @param color the color you want
      */
+    @Override
     public void setColor(int color){
         paint.setColor(color);
         virtualPaint.setColor(color);
         virtualPaint.setAlpha(ALPHA);
     }
 
-    private void toggleAnim(){
-        float percent = open ? 0 : 1;
-        float tmp;
-        int timeLapse;
-        long cur;
-        long animStartTime= SystemClock.uptimeMillis();
-        while(percent >= 0 && percent <= 1) {
-            cur = SystemClock.uptimeMillis();
-            if (open) {
-                timeLapse = (int) (cur - animStartTime);
-            } else {
-                timeLapse = (int) (DipperDrawable.DURATION + animStartTime - cur);
-            }
-            percent = (float) timeLapse / DipperDrawable.DURATION;
-            tmp = Math.min(1, percent);
-            tmp = Math.max(0, tmp);
-            setPercentage(tmp, false);
-            scheduleSelf(mInvalidateTask, cur);
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        animating = false;
-    }
-
-    private void open(boolean checked){
-        this.open = checked;
-        animating = true;
-        new Thread(){
-            public void run(){
-                toggleAnim();
-            }
-        }.start();
-    }
-
-    /**
-     * to set the status. Must called after onLayout. You can use the post method
-     * @see android.view.View#post(Runnable)
-     * @param open status to be set
-     * @param anim need animation or not
-     * @param force force to update even the status is the same
-     */
-    public void setOpen(boolean open, boolean anim, boolean force) {
-        if (!force && this.open == open) {
-            return;
-        }
-        this.open = open;
-        if (anim) {
-            open(this.open);
-            return;
-        } else if (open) {
-            setPercentage(1, false);
-        } else {
-            setPercentage(0, false);
-        }
-        invalidateSelf();
-    }
-
-    public boolean isOpen(){
-        return open;
-    }
-
-    public boolean isAnimating(){
-        return animating;
-    }
 }

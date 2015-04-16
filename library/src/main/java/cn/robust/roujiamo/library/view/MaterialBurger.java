@@ -9,36 +9,36 @@ import android.view.View;
 import android.widget.ImageView;
 
 import cn.robust.roujiamo.library.OnOpenListener;
-import cn.robust.roujiamo.library.drawable.DipperDrawable;
+import cn.robust.roujiamo.library.drawable.MaterialBurgerDrawable;
 
 /**
- * @see cn.robust.roujiamo.library.drawable.DipperDrawable
- * Created by wuhongping on 15-4-3.
+ * @see cn.robust.roujiamo.library.drawable.MaterialBurgerDrawable
+ * Created by wuhongping on 15-4-15.
  */
-public class Dipper extends ImageView implements View.OnClickListener {
-    private DipperDrawable drawable;
+public class MaterialBurger extends ImageView implements View.OnClickListener {
+    private MaterialBurgerDrawable drawable;
     private OnOpenListener mListener;
 
-    public Dipper(Context context) {
+    public MaterialBurger(Context context) {
         super(context);
         init(context);
     }
 
-    public Dipper(Context context, AttributeSet attrs) {
+    public MaterialBurger(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public Dipper(Context context, AttributeSet attrs, int defStyle) {
+    public MaterialBurger(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
     }
 
-    private void init(Context context){
+    private void init(Context context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
-        drawable = new DipperDrawable(context);
+        drawable = new MaterialBurgerDrawable(context);
         super.setImageDrawable(drawable);
         setClickable(true);
         setOnClickListener(this);
@@ -62,9 +62,10 @@ public class Dipper extends ImageView implements View.OnClickListener {
             return;
         }
 
-        final SavedState ss = (SavedState) state;
+        final SavedState ss = (SavedState)state;
         super.onRestoreInstanceState(ss.getSuperState());
 
+//        this.open = ss.open;
         post(new Runnable() {
 
             @Override
@@ -74,32 +75,13 @@ public class Dipper extends ImageView implements View.OnClickListener {
         });
     }
 
-//    @Override
-//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        int measuredWidth;
-//        int measuredHeight;
-//        int wMode = MeasureSpec.getMode(widthMeasureSpec);
-//        int hMode = MeasureSpec.getMode(heightMeasureSpec);
-//        if(wMode != MeasureSpec.EXACTLY){
-//            measuredWidth = drawable.getIntrinsicWidth();
-//        } else {
-//            measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
-//        }
-//        if(hMode != MeasureSpec.EXACTLY){
-//            measuredHeight = drawable.getIntrinsicHeight();
-//        } else {
-//            measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
-//        }
-//
-//        setMeasuredDimension(measuredWidth, measuredHeight);
-//    }
-
     /**
      * nothing will be done
      * @param drawable doesn't matter
      */
     @Override
     public void setImageDrawable(Drawable drawable) {
+//        super.setImageDrawable(drawable);
     }
 
     @Override
@@ -108,7 +90,6 @@ public class Dipper extends ImageView implements View.OnClickListener {
             setOpen(!drawable.isOpen(), true);
         }
     }
-
 
     /**
      * to set the status. Must called after onLayout. You can use the post method

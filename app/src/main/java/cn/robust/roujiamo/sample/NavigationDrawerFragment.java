@@ -22,6 +22,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import cn.robust.roujiamo.library.ActionBarDrawerToggle;
+import cn.robust.roujiamo.library.drawable.BurgerDrawable;
+import cn.robust.roujiamo.library.drawable.MaterialBurgerDrawable;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -138,6 +140,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(),                    /* host Activity */
                 mDrawerLayout,                    /* DrawerLayout object */
+                new MaterialBurgerDrawable(getActivity()), /* icon */
                 R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
                 R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
         ) {
@@ -231,9 +234,24 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.setting, menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
+        }
+
+        switch (item.getItemId()){
+            case R.id.open_close:
+                mDrawerToggle.setDrawable(new BurgerDrawable(getActivity()));
+                break;
+            case R.id.material:
+                mDrawerToggle.setDrawable(new MaterialBurgerDrawable(getActivity()));
+                break;
         }
 
         return super.onOptionsItemSelected(item);
