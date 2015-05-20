@@ -9,8 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
 
-import cn.robust.roujiamo.library.drawable.AbsRoujiamo;
-import cn.robust.roujiamo.library.drawable.MaterialBurgerDrawable;
+import cn.robust.roujiamo.library.drawable.AbsRoujiamoDrawable;
 
 /**
  * most of these sources are copied from support-v4
@@ -148,7 +147,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
     private boolean mDrawerIndicatorEnabled = true;
 
     private Drawable mThemeImage;
-    private AbsRoujiamo mSlider;
+    private AbsRoujiamoDrawable mSlider;
     private final int mOpenDrawerContentDescRes;
     private final int mCloseDrawerContentDescRes;
 
@@ -172,7 +171,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
      * @param closeDrawerContentDescRes A String resource to describe the "close drawer" action
      *                                  for accessibility
      */
-    public ActionBarDrawerToggle(Activity activity, DrawerLayout drawerLayout, AbsRoujiamo iconDrawable,
+    public ActionBarDrawerToggle(Activity activity, DrawerLayout drawerLayout, AbsRoujiamoDrawable iconDrawable,
                                  int openDrawerContentDescRes, int closeDrawerContentDescRes) {
         mActivity = activity;
 
@@ -214,7 +213,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
         }
     }
 
-    public void setDrawable(AbsRoujiamo drawable){
+    public void setDrawable(AbsRoujiamoDrawable drawable){
         mSlider = drawable;
         syncState();
     }

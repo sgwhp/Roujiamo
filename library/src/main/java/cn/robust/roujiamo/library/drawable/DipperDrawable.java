@@ -2,14 +2,11 @@ package cn.robust.roujiamo.library.drawable;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
-import android.os.SystemClock;
 import android.util.FloatMath;
 import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
@@ -22,7 +19,7 @@ import cn.robust.roujiamo.library.Util;
  * See the <a href="https://dribbble.com/shots/1631598-On-Off?list=shots&sort=popular&timeframe=year&offset=34" />
  * Created by wuhongping on 15-4-10.
  */
-public class DipperDrawable extends AbsRoujiamo {
+public class DipperDrawable extends AbsRoujiamoDrawable {
     private static final int PADDING = 4;
     private static final int STROKE = 3;
     private static final int LENGTH = 44;
@@ -126,6 +123,7 @@ public class DipperDrawable extends AbsRoujiamo {
         //this is not an accurate number, since the interpolator is not linear
         arcDuration = DURATION - (int) ((shortLineEnd.x - intersection.x) /
                 ((shortLineStart.x - intersection.x) + (longLineStart.x - longLineEnd.x)) * DURATION);
+        // the interception point is in quadrant 3, so the angle must minus 180
         arcStartAngle = (float) (Math.asin((y0 - intersection.y) / radius) / Math.PI * 180) - 180;
         setPercentage(percent, false);
     }
@@ -150,12 +148,6 @@ public class DipperDrawable extends AbsRoujiamo {
         } else {
             snakeHead.y = shortLineStart.y - translateX + (shortLineStart.x - intersection.x);
         }
-        path.reset();
-        path.moveTo(snakeTail.x, snakeTail.y);
-        if(snakeHead.x > shortLineStart.x) {
-            path.lineTo(shortLineStart.x, shortLineStart.y);
-        }
-        path.lineTo(snakeHead.x, snakeHead.y);
         path.reset();
         path.moveTo(snakeTail.x, snakeTail.y);
         if(snakeHead.x > shortLineStart.x) {

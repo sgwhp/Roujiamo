@@ -3,7 +3,6 @@ package cn.robust.roujiamo.library.drawable;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
-import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
@@ -21,7 +20,7 @@ import cn.robust.roujiamo.library.Util;
  * See the <a href="https://dribbble.com/shots/1623679-Open-Close?list=shots&sort=popular&timeframe=year&offset=0" />
  * Created by wuhongping on 15-4-9.
  */
-public class BurgerDrawable extends AbsRoujiamo {
+public class BurgerDrawable extends AbsRoujiamoDrawable {
     private static final int PADDING = 4;
     private static final int STROKE = 3;
     private static final int LENGTH = 44;

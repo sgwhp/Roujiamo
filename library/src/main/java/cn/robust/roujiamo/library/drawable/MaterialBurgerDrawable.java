@@ -2,13 +2,9 @@ package cn.robust.roujiamo.library.drawable;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
-import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.os.SystemClock;
 import android.util.FloatMath;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
@@ -20,7 +16,7 @@ import cn.robust.roujiamo.library.Util;
  * see the <a href="https://dribbble.com/shots/1621920-Google-Material-Design-Free-AE-Project-File?list=shots&sort=popular&timeframe=year&offset=19"/>
  * Created by wuhongping on 15-4-15.
  */
-public class MaterialBurgerDrawable extends AbsRoujiamo {
+public class MaterialBurgerDrawable extends AbsRoujiamoDrawable {
     private static final int PADDING = 4;
     private static final int STROKE = 4;
     private static final int LENGTH = 44;

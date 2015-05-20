@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Roujiamo">
+        <attr name="drawable" format="enum">
+            <enum name="Burger" value="0"/>
+            <enum name="Dipper" value="1"/>
+            <enum name="MaterialBurger" value="2"/>
+            <enum name="Sandwich" value="3"/>
+        </attr>
+    </declare-styleable>
+</resources>

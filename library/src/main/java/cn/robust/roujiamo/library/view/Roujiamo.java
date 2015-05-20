@@ -1,6 +1,7 @@
 package cn.robust.roujiamo.library.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,36 +10,63 @@ import android.view.View;
 import android.widget.ImageView;
 
 import cn.robust.roujiamo.library.OnOpenListener;
+import cn.robust.roujiamo.library.R;
+import cn.robust.roujiamo.library.drawable.AbsRoujiamoDrawable;
+import cn.robust.roujiamo.library.drawable.BurgerDrawable;
 import cn.robust.roujiamo.library.drawable.DipperDrawable;
+import cn.robust.roujiamo.library.drawable.MaterialBurgerDrawable;
+import cn.robust.roujiamo.library.drawable.SandwichDrawable;
 
 /**
- * @see cn.robust.roujiamo.library.drawable.DipperDrawable
- * Created by wuhongping on 15-4-3.
+ * Created by wuhongping on 15-5-5.
  */
-public class Dipper extends ImageView implements View.OnClickListener {
-    private DipperDrawable drawable;
+public class Roujiamo extends ImageView implements View.OnClickListener {
+    public static final int DRAWABLE_TYPE_BURGER = 0;
+    public static final int DRAWABLE_TYPE_DIPPER = 1;
+    public static final int DRAWABLE_TYPE_MATERIAL_BURGER = 2;
+    public static final int DRAWABLE_TYPE_SANDWICH = 3;
     private OnOpenListener mListener;
+    private AbsRoujiamoDrawable drawable;
 
-    public Dipper(Context context) {
+    public Roujiamo(Context context) {
         super(context);
-        init(context);
+        init(context, null);
     }
 
-    public Dipper(Context context, AttributeSet attrs) {
+    public Roujiamo(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init(context, attrs);
     }
 
-    public Dipper(Context context, AttributeSet attrs, int defStyle) {
+    public Roujiamo(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(context);
+        init(context, attrs);
     }
 
-    private void init(Context context){
+    private void init(Context context, AttributeSet attrs) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
-        drawable = new DipperDrawable(context);
+        if(attrs == null) {
+            drawable = new BurgerDrawable(context);
+        } else {
+            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.Roujiamo);
+            final int type = typedArray.getInt(R.styleable.Roujiamo_drawable, 0);
+            switch (type){
+                case DRAWABLE_TYPE_DIPPER:
+                    drawable = new DipperDrawable(context);
+                    break;
+                case DRAWABLE_TYPE_MATERIAL_BURGER:
+                    drawable = new MaterialBurgerDrawable(context);
+                    break;
+                case DRAWABLE_TYPE_SANDWICH:
+                    drawable = new SandwichDrawable(context);
+                    break;
+                default:
+                    drawable = new BurgerDrawable(context);
+            }
+            typedArray.recycle();
+        }
         super.setImageDrawable(drawable);
         setClickable(true);
         setOnClickListener(this);
@@ -62,9 +90,10 @@ public class Dipper extends ImageView implements View.OnClickListener {
             return;
         }
 
-        final SavedState ss = (SavedState) state;
+        final SavedState ss = (SavedState)state;
         super.onRestoreInstanceState(ss.getSuperState());
 
+//        this.open = ss.open;
         post(new Runnable() {
 
             @Override
@@ -80,13 +109,14 @@ public class Dipper extends ImageView implements View.OnClickListener {
 //        int measuredHeight;
 //        int wMode = MeasureSpec.getMode(widthMeasureSpec);
 //        int hMode = MeasureSpec.getMode(heightMeasureSpec);
+//        Drawable d = getDrawable();
 //        if(wMode != MeasureSpec.EXACTLY){
-//            measuredWidth = drawable.getIntrinsicWidth();
+//            measuredWidth = d.getIntrinsicWidth();
 //        } else {
 //            measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
 //        }
 //        if(hMode != MeasureSpec.EXACTLY){
-//            measuredHeight = drawable.getIntrinsicHeight();
+//            measuredHeight = d.getIntrinsicHeight();
 //        } else {
 //            measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
 //        }
@@ -100,6 +130,7 @@ public class Dipper extends ImageView implements View.OnClickListener {
      */
     @Override
     public void setImageDrawable(Drawable drawable) {
+//        super.setImageDrawable(drawable);
     }
 
     @Override
@@ -109,6 +140,9 @@ public class Dipper extends ImageView implements View.OnClickListener {
         }
     }
 
+    public void setDrawable(AbsRoujiamoDrawable drawable){
+        this.drawable = drawable;
+    }
 
     /**
      * to set the status. Must called after onLayout. You can use the post method

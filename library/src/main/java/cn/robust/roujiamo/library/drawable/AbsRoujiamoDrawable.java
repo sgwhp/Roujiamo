@@ -12,7 +12,7 @@ import cn.robust.roujiamo.library.Util;
  * provide a thread to control animation and a paint to draw
  * Created by wuhongping on 15-4-16.
  */
-public abstract class AbsRoujiamo extends Drawable {
+public abstract class AbsRoujiamoDrawable extends Drawable {
     protected float percent;
     protected boolean open = false;
     protected boolean animating = false;
@@ -25,7 +25,7 @@ public abstract class AbsRoujiamo extends Drawable {
         }
     };
 
-    public AbsRoujiamo(Context context){
+    public AbsRoujiamoDrawable(Context context){
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(Util.dip2px(context, getStroke()));
         paint.setStrokeCap(Paint.Cap.ROUND);
